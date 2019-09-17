@@ -8,11 +8,28 @@ var fs = require('fs'),
     Schema = mongoose.Schema, 
     Listing = require('./ListingSchema.js'), 
     config = require('./config');
+    var xList;
+    var docList;
 
+
+
+mongoose.connect(config.db.uri, {useNewUrlParser: true, useUnifiedTopology: true});
+// mongoose.set('useCreateIndex', true);
+// mongoose.set('useFindAndModify', false);
 /* Connect to your database using mongoose - remember to keep your key secret*/
 //see https://mongoosejs.com/docs/connections.html
 //See https://docs.atlas.mongodb.com/driver-connection/
 
+fs.readFile('listings.json', 'utf8', function(err, data) {
+  if(err) throw err;
+  xList = JSON.parse(data);
+
+  xList.entries.forEach(function(X){
+  docList = new Listing(X);
+  docList.save(function(err) {if(err) throw err;});
+  });
+
+});
 /* 
   Instantiate a mongoose model for each listing object in the JSON file, 
   and then save it to your Mongo database 
